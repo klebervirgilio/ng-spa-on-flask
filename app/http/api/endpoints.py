@@ -8,9 +8,7 @@ app = Flask(__name__)
 @app.route("/kudos", methods=["GET"])
 @login_required
 def index():
-  kudo_service = Kudo(g.user)
-  kudos = kudo_service.find_all_kudos()
-  return json.dumps(kudos), 200, {'content-type': 'application/json'}
+  return json_response(Kudo(g.user).find_all_kudos())
 
 @app.route("/kudos", methods=["POST"])
 @login_required
@@ -18,21 +16,20 @@ def create():
     github_repo = GithubRepoSchema().load(json.loads(request.data))
     
     if github_repo.errors:
-      return json.dumps({'msg': 'invalid kudo', 'errors': github_repo.errors}), 422, {'content-type': 'application/json'}
+      return json_response({'error': github_repo.errors}, 422)
 
-    kudo_service = Kudo(g.user)
-    kudo = kudo_service.create_kudo_for(github_repo)
-    return json.dumps(kudo), 200, {'content-type': 'application/json'}
+    kudo = Kudo(g.user).create_kudo_for(github_repo)
+    return json_response(kudo)
   
 @app.route("/kudo/<int:repo_id>", methods=["GET"])
 @login_required
 def show(repo_id):
-  kudo_service = Kudo(g.user)
-  kudo = kudo_service.find_kudo(repo_id)
+  kudo = Kudo(g.user).find_kudo(repo_id)
+
   if kudo:
-    return json.dumps(kudo), 200, {'content-type': 'application/json'}
+    return json_response(kudo)
   else:
-    return json.dumps({'error': 'kudo not found'}), 404, {'content-type': 'application/json'}
+    return json_response({'error': 'kudo not found'}, 404)
   
 @app.route("/kudo/<int:repo_id>", methods=["PUT"])
 @login_required
@@ -40,13 +37,13 @@ def update(repo_id):
     github_repo = GithubRepoSchema().load(json.loads(request.data))
     
     if github_repo.errors:
-      return json.dumps({'msg': 'invalid kudo', 'errors': github_repo.errors}), 422, {'content-type': 'application/json'}
+      return json_response({'error': github_repo.errors}, 422)
 
     kudo_service = Kudo(g.user)
     if kudo_service.update_kudo_with(repo_id, github_repo):
-      return json.dumps(github_repo.data), 200, {'content-type': 'application/json'}
+      return json_response(github_repo.data)
     else:
-      return json.dumps({'error': 'kudo not found'}), 404, {'content-type': 'application/json'}
+      return json_response({'error': 'kudo not found'}, 404)
 
     
 @app.route("/kudo/<int:repo_id>", methods=["DELETE"])
@@ -54,6 +51,10 @@ def update(repo_id):
 def delete(repo_id):
   kudo_service = Kudo(g.user)
   if kudo_service.delete_kudo_for(repo_id):
-    return json.dumps({}), 200, {'content-type': 'application/json'}
+    return json_response({})
   else:
-    return json.dumps({'error': 'kudo not found'}), 404, {'content-type': 'application/json'}
+    return json_response({'error': 'kudo not found'}, 404)
+
+
+def json_response(payload, status=200):
+  return (json.dumps(payload), status, {'content-type': 'application/json'})
