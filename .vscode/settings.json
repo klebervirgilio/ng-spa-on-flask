@@ -1,3 +1,4 @@
 {
-  "python.linting.pylintEnabled": false
+  "python.linting.pylintEnabled": false,
+  "python.pythonPath": "/Users/klebervirgilio/.pyenv/versions/3.6.4/bin/python"
 }

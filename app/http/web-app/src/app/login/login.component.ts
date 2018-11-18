@@ -18,4 +18,9 @@ export class LoginComponent implements OnInit {
       this.router.navigate(['/home'], {replaceUrl: true})
     }
   }
+
+  async login(event) {
+    event.preventDefault();
+    await this.oktaAuth.loginRedirect('/home');
+  }
 }

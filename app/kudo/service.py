@@ -15,7 +15,7 @@ class Service(object):
     return [self.dump(kudo) for kudo in kudos]
 
   def find_kudo(self, repo_id):
-    kudo = self.repo.find({'user_id': self.user_id, 'repo_id': repo_id})
+    kudo = self.repo.find({'user_id': self.user_id, 'id': repo_id})
     return self.dump(kudo)
 
   def create_kudo_for(self, githubRepo):
@@ -23,11 +23,11 @@ class Service(object):
     return self.dump(githubRepo.data)
 
   def update_kudo_with(self, repo_id, githubRepo):
-    updated_kudos = self.repo.update({'user_id': self.user_id, 'repo_id': repo_id}, self.prepare_kudo(githubRepo))
+    updated_kudos = self.repo.update({'user_id': self.user_id, 'id': repo_id}, self.prepare_kudo(githubRepo))
     return updated_kudos > 0
 
   def delete_kudo_for(self, repo_id):
-    deleted_kudos = self.repo.delete({'user_id': self.user_id, 'repo_id': repo_id})
+    deleted_kudos = self.repo.delete({'user_id': self.user_id, 'id': repo_id})
     return deleted_kudos > 0
 
   def dump(self, data):
