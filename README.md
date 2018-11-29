@@ -334,7 +334,7 @@ pipenv install flask_cors
 
 Next, implement your endpoints. Go ahead and copy and paste the content above into the `app/http/api/endpoints.py` file.
 
-```
+```python
 from .middlewares import login_required
 from flask import Flask, json, g, request
 from app.kudo.service import Service as Kudo
